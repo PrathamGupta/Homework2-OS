@@ -1,2 +1,5 @@
-# Homework2-OS
-Operating Systems: Homework 2 repository 
+# Operating Systems Assignment 
+
+## Operating Systems: Homework repository 
+
+Making the assignment.
