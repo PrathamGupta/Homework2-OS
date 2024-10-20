@@ -84,30 +84,33 @@ void run_node(const std::string& node_name) {
     wait(nullptr);
 }
 
-// Function to run a pipe between two nodes
+// Updated Function to run a pipe between two nodes using only one child process
 void run_pipe(const std::string& pipe_name) {
     Pipe p = pipes[pipe_name];
     int fd[2];
-    pipe(fd);
+    pipe(fd);  // Create a pipe (fd[0] for reading, fd[1] for writing)
 
     if (fork() == 0) {
-        close(fd[0]); // Close read end
-        dup2(fd[1], STDOUT_FILENO); // Redirect stdout to pipe
-        close(fd[1]);
+        // Child process handles the "from" command
+        close(fd[0]);  // Close the read end (child doesn't need to read)
+        dup2(fd[1], STDOUT_FILENO);  // Redirect stdout to pipe's write end
+        close(fd[1]);  // Close the write end after redirection
+
+        // Execute the "from" command
         execute_command(nodes[p.from].command);
-    }
+    } else {
+        wait(nullptr);
+        // Parent process handles the "to" command
+        close(fd[1]);  // Close the write end (parent doesn't need to write)
+        dup2(fd[0], STDIN_FILENO);  // Redirect stdin to pipe's read end
+        close(fd[0]);  // Close the read end after redirection
 
-    if (fork() == 0) {
-        close(fd[1]); // Close write end
-        dup2(fd[0], STDIN_FILENO); // Redirect stdin from pipe
-        close(fd[0]);
+        // Execute the "to" command
         execute_command(nodes[p.to].command);
-    }
 
-    close(fd[0]);
-    close(fd[1]);
-    wait(nullptr);
-    wait(nullptr);
+        // Wait for the child process to finish
+        wait(nullptr);
+    }
 }
 
 // Function to run a concatenation of nodes or pipes
