@@ -1,0 +1,9 @@
+node=infinite
+command=./infinite
+
+node=finite
+command=./finite
+
+pipe=test
+from=infinite
+to=finite

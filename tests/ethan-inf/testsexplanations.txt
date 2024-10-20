@@ -1,0 +1,25 @@
+test 5:
+prep bash commands:
+gcc infinite.c -o infinite
+gcc finite.c -o finite
+flow=test5.flow
+action=test
+equivalent bash command = ./infinite | ./finite
+bash result = 
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+flow command = ./flow test5.flow test
+
+test4:
+flow=test4.flow
+action=doubleShenanigans
+equivalent bash command = ((cat foo.txt; cat foo.txt | sed 's/o/u/g';) | wc ) | wc
+flow command = ./flow test4.flow doubleShenanigans
