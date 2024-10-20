@@ -1,16 +1,18 @@
-# Makefile for compiling the flow program
+# Define the compiler and the compiler flags
+CXX = g++
+CXXFLAGS = -std=c++11 -Wall
 
-CC = gcc
-CFLAGS = -Wall -g
+# Define the target executable and the source files
 TARGET = flow
+SRCS = flow.cpp
 
-all: $(TARGET)
+# Define how to build the target executable
+$(TARGET): $(SRCS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRCS)
 
-$(TARGET): flow.o
-	$(CC) $(CFLAGS) -o $(TARGET) flow.o
-
-flow.o: flow.c
-	$(CC) $(CFLAGS) -c flow.c
-
+# Clean the build files
 clean:
-	rm -f *.o $(TARGET)
+	rm -f $(TARGET)
+
+# Phony targets
+.PHONY: clean

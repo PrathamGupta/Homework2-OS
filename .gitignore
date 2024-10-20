@@ -399,3 +399,5 @@ FodyWeavers.xsd
 
 #Ignoreing CompiledFile
 flow.o
+
+.vscode/
