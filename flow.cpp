@@ -75,6 +75,75 @@ void execute_command(const std::string& command) {
     exit(1);
 }
 
+// Forward declare the functions to resolve the circular dependency
+void run_pipe(const std::string& pipe_name);
+void execute_concatenate(const std::string& concat_name);
+
+// Function to handle a pipe between two actions (could be a node, another pipe, or concatenation)
+void run_pipe(const std::string& pipe_name) {
+    Pipe p = pipes[pipe_name];
+    int fd[2];
+    pipe(fd);  // Create a pipe (fd[0] for reading, fd[1] for writing)
+
+    if (fork() == 0) {
+        // Child process handles the "from" part
+        close(fd[0]);  // Close the read end (child doesn't need to read)
+        dup2(fd[1], STDOUT_FILENO);  // Redirect stdout to pipe's write end
+        close(fd[1]);  // Close the write end after redirection
+
+        // The "from" part could be a node, pipe, or concatenation
+        if (nodes.find(p.from) != nodes.end()) {
+            execute_command(nodes[p.from].command);  // Handle node
+        } else if (pipes.find(p.from) != pipes.end()) {
+            run_pipe(p.from);  // Handle pipe recursively
+        } else if (concatenates.find(p.from) != concatenates.end()) {
+            execute_concatenate(p.from);  // Handle concatenation
+        }
+    } else {
+        // Parent process handles the "to" part
+        close(fd[1]);  // Close the write end (parent doesn't need to write)
+        dup2(fd[0], STDIN_FILENO);  // Redirect stdin to pipe's read end
+        close(fd[0]);  // Close the read end after redirection
+
+        // The "to" part could be a node, pipe, or concatenation
+        if (nodes.find(p.to) != nodes.end()) {
+            execute_command(nodes[p.to].command);  // Handle node
+        } else if (pipes.find(p.to) != pipes.end()) {
+            run_pipe(p.to);  // Handle pipe recursively
+        } else if (concatenates.find(p.to) != concatenates.end()) {
+            execute_concatenate(p.to);  // Handle concatenation
+        }
+
+        // Wait for the child process to finish
+        wait(nullptr);
+    }
+}
+
+// Function to handle concatenations (can include nodes, pipes, or other concatenations)
+// Updated function to handle concatenations (can include nodes, pipes, or other concatenations)
+// Updated function to handle concatenations (can include nodes, pipes, or other concatenations)
+void execute_concatenate(const std::string& concat_name) {
+    Concatenate concat = concatenates[concat_name];
+
+    for (const std::string& part : concat.parts) {
+        if (nodes.find(part) != nodes.end()) {
+            // If the part is a node, directly execute the command
+            if (fork() == 0) {
+                execute_command(nodes[part].command);
+            }
+            wait(nullptr);  // Wait for the node to finish execution
+        } else if (pipes.find(part) != pipes.end()) {
+            // If the part is a pipe, call run_pipe to handle it
+            run_pipe(part);
+        } else if (concatenates.find(part) != concatenates.end()) {
+            // If the part is another concatenate, call execute_concatenate recursively
+            execute_concatenate(part);
+        }
+    }
+}
+
+
+
 // Function to run a single node (command)
 void run_node(const std::string& node_name) {
     Node node = nodes[node_name];
@@ -84,55 +153,14 @@ void run_node(const std::string& node_name) {
     wait(nullptr);
 }
 
-// Updated Function to run a pipe between two nodes using only one child process
-void run_pipe(const std::string& pipe_name) {
-    Pipe p = pipes[pipe_name];
-    int fd[2];
-    pipe(fd);  // Create a pipe (fd[0] for reading, fd[1] for writing)
-
-    if (fork() == 0) {
-        // Child process handles the "from" command
-        close(fd[0]);  // Close the read end (child doesn't need to read)
-        dup2(fd[1], STDOUT_FILENO);  // Redirect stdout to pipe's write end
-        close(fd[1]);  // Close the write end after redirection
-
-        // Execute the "from" command
-        execute_command(nodes[p.from].command);
-    } else {
-        wait(nullptr);
-        // Parent process handles the "to" command
-        close(fd[1]);  // Close the write end (parent doesn't need to write)
-        dup2(fd[0], STDIN_FILENO);  // Redirect stdin to pipe's read end
-        close(fd[0]);  // Close the read end after redirection
-
-        // Execute the "to" command
-        execute_command(nodes[p.to].command);
-
-        // Wait for the child process to finish
-        wait(nullptr);
-    }
-}
-
-// Function to run a concatenation of nodes or pipes
-void run_concatenate(const std::string& concat_name) {
-    Concatenate concat = concatenates[concat_name];
-    for (const std::string& part : concat.parts) {
-        if (pipes.find(part) != pipes.end()) {
-            run_pipe(part);
-        } else {
-            run_node(part);
-        }
-    }
-}
-
-// Function to run the specified action (node, pipe, or concatenation)
+// Function to run the specified action (could be a node, pipe, or concatenation)
 void run_action(const std::string& action) {
-    if (pipes.find(action) != pipes.end()) {
+    if (nodes.find(action) != nodes.end()) {
+        run_node(action);
+    } else if (pipes.find(action) != pipes.end()) {
         run_pipe(action);
     } else if (concatenates.find(action) != concatenates.end()) {
-        run_concatenate(action);
-    } else {
-        run_node(action);
+        execute_concatenate(action);
     }
 }
 
