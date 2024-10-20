@@ -4,10 +4,11 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <sstream>
 #include <unistd.h>
 #include <sys/wait.h>
-using namespace std;
 
+// Data structures for Nodes, Pipes, and Concatenates
 struct Node {
     std::string command;
 };
@@ -21,25 +22,60 @@ struct Concatenate {
     std::vector<std::string> parts;
 };
 
+// Hashmaps to store nodes, pipes, and concatenates
 std::unordered_map<std::string, Node> nodes;
 std::unordered_map<std::string, Pipe> pipes;
 std::unordered_map<std::string, Concatenate> concatenates;
 
-void execute_command(const std::string& command) {
-    std::vector<char*> args;
-    char* cmd = strdup(command.c_str());
-    char* token = strtok(cmd, " ");
-    while (token != nullptr) {
-        args.push_back(token);
-        token = strtok(nullptr, " ");
+// Function to remove quotes from the beginning and end of a string, if they exist
+std::string remove_quotes(const std::string& str) {
+    if (str.length() >= 2 && 
+        ((str.front() == '\'' && str.back() == '\'') || (str.front() == '"' && str.back() == '"'))) {
+        return str.substr(1, str.length() - 2);  // Remove the first and last character
     }
-    args.push_back(nullptr);
+    return str;
+}
 
+// Function to split commands into arguments while respecting quotes
+std::vector<char*> split_command(const std::string& command) {
+    std::vector<char*> args;
+    std::stringstream ss(command);
+    std::string token;
+    bool inside_quotes = false;
+    std::string quoted_token;
+
+    while (ss >> token) {
+        if (token.front() == '\'' || token.front() == '"') {
+            inside_quotes = true;
+            quoted_token = token;
+
+            if (token.back() == '\'' || token.back() == '"') {
+                inside_quotes = false;
+                args.push_back(strdup(remove_quotes(quoted_token).c_str()));
+            }
+        } else if (inside_quotes) {
+            quoted_token += " " + token;
+            if (token.back() == '\'' || token.back() == '"') {
+                inside_quotes = false;
+                args.push_back(strdup(remove_quotes(quoted_token).c_str()));
+            }
+        } else {
+            args.push_back(strdup(remove_quotes(token).c_str()));
+        }
+    }
+    args.push_back(nullptr); // Null terminate the argument list for execvp
+    return args;
+}
+
+// Function to execute a single command
+void execute_command(const std::string& command) {
+    std::vector<char*> args = split_command(command);
     execvp(args[0], args.data());
     perror("execvp failed");
     exit(1);
 }
 
+// Function to run a single node (command)
 void run_node(const std::string& node_name) {
     Node node = nodes[node_name];
     if (fork() == 0) {
@@ -48,13 +84,13 @@ void run_node(const std::string& node_name) {
     wait(nullptr);
 }
 
+// Function to run a pipe between two nodes
 void run_pipe(const std::string& pipe_name) {
     Pipe p = pipes[pipe_name];
     int fd[2];
     pipe(fd);
 
     if (fork() == 0) {
-        // First process: from node
         close(fd[0]); // Close read end
         dup2(fd[1], STDOUT_FILENO); // Redirect stdout to pipe
         close(fd[1]);
@@ -62,7 +98,6 @@ void run_pipe(const std::string& pipe_name) {
     }
 
     if (fork() == 0) {
-        // Second process: to node
         close(fd[1]); // Close write end
         dup2(fd[0], STDIN_FILENO); // Redirect stdin from pipe
         close(fd[0]);
@@ -75,6 +110,7 @@ void run_pipe(const std::string& pipe_name) {
     wait(nullptr);
 }
 
+// Function to run a concatenation of nodes or pipes
 void run_concatenate(const std::string& concat_name) {
     Concatenate concat = concatenates[concat_name];
     for (const std::string& part : concat.parts) {
@@ -86,6 +122,7 @@ void run_concatenate(const std::string& concat_name) {
     }
 }
 
+// Function to run the specified action (node, pipe, or concatenation)
 void run_action(const std::string& action) {
     if (pipes.find(action) != pipes.end()) {
         run_pipe(action);
@@ -96,6 +133,7 @@ void run_action(const std::string& action) {
     }
 }
 
+// Function to parse the flow file and populate nodes, pipes, and concatenates
 void parse_flow_file(const std::string& filename) {
     std::ifstream file(filename);
     std::string line;
@@ -127,6 +165,7 @@ void parse_flow_file(const std::string& filename) {
     }
 }
 
+// Main function
 int main(int argc, char* argv[]) {
     if (argc != 3) {
         std::cerr << "Usage: ./flow <flow_file> <action>" << std::endl;
