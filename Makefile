@@ -14,5 +14,9 @@ $(TARGET): $(SRCS)
 clean:
 	rm -f $(TARGET)
 
+# Run the tests
+test:
+	python run_tests.py
+
 # Phony targets
 .PHONY: clean

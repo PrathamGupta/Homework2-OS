@@ -1,0 +1,10 @@
+node=list_dir
+command=ls tests/const-dir
+
+node=tee_to_foo
+command=tee tests/tee.txt
+
+pipe=ls_to_foo
+from=list_dir
+to=tee_to_foo
+

@@ -16,3 +16,9 @@ Now run the command
 ```
 ./flow flowfile.flow doit
 ```
+
+For running tests. Once you have run the make command:
+
+```
+make test
+```

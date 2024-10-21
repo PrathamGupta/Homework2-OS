@@ -1,0 +1,13 @@
+node=mkdir_test
+command=mkdir -p tests/a
+
+node=word_count
+command=wc
+
+stderr=redirect_error
+from=mkdir_test
+
+pipe=catch_errors
+from=redirect_error
+to=word_count
+

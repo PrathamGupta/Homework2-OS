@@ -1,0 +1,62 @@
+TEST-1
+TEST-BEGIN
+COMMAND:
+ls tests/const-dir | wc
+
+FLOW COMMAND:
+./flow tests/t1.flow doit
+
+EXPECTED OUTPUT:
+      3       3      18
+TEST-END
+
+TEST-2
+TEST-BEGIN
+COMMAND:
+(cat tests/foo.txt; cat tests/foo.txt | sed 's/o/u/g') | wc
+
+FLOW COMMAND:
+./flow tests/t2.flow shenanigan
+
+EXPECTED OUTPUT:
+      2       6      12
+TEST-END
+
+TEST-3
+TEST-BEGIN
+COMMAND:
+mkdir tests/a 2>&1 | wc
+
+FLOW COMMAND:
+./flow tests/t3.flow catch_errors
+
+EXPECTED OUTPUT:
+      1       7      58
+TEST-END
+
+TEST-4
+TEST-BEGIN
+COMMAND:
+wc < tests/result.txt
+
+FLOW COMMAND:
+./flow tests/t4.flow process_pipe
+
+EXPECTED OUTPUT:
+ 1  3 15
+TEST-END
+
+TEST-5
+TEST-BEGIN
+COMMAND:
+ls tests/const-dir | tee tests/tee.txt
+
+FLOW COMMAND:
+./flow tests/t5.flow ls_to_foo
+
+EXPECTED OUTPUT:
+file1
+file2
+file3
+TEST-END
+
