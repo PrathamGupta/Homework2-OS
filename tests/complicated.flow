@@ -1,5 +1,5 @@
 node=cat_foo
-command=cat foo.txt
+command=cat tests/foo.txt
 
 node=sed_o_u
 command=sed 's/o/u/g'
