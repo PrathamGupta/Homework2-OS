@@ -1,0 +1,27 @@
+Homework 2
+
+For this homework, we needed to make a script to handle bash redirections more efficiently. We need to implemetn pipe functionality, concatenate functionality and normal node functionalityy in the bash redirections. The process of each of thoise has been broken down below:
+
+---
+
+Node Implementation:
+
+The node in my implementation is designed to execute a simple command as a separate process. To do this, we leveraged system calls like fork() to create a new process and execvp() to replace the process image with the command specified in the node. The process waits for completion using wait() to ensure that the command finishes before proceeding to the next step. Each node is defined by a unique command and set of arguments, which are parsed and passed to execvp().
+
+---
+
+Pipe Implementation:
+
+Piping between tow nodes is handled using the pipe() system call. This sets up inter-process communication, where the output of the first node is directed as input to the second. We utilized dup2() to redirect file descriptors so that the output of the first command (stdout) is connected to the input (stdin) of the second command. After setting up the pipe, we ensured that both nodes run in parallel using fork() to execute both processes simultaneously. Once the pipe is set up and the processes are spawned, we used wait() to ensure both commands complete before proceeding.
+
+---
+
+Concatenation Implementation:
+
+Concatenation allows for chaining multiple nodes sequentially, where the output of each node is passed as input to the next. This was achieved by looping through all the commands and linking them together using pipes, similar to how two nodes are chained. For each pair of nodes, a pipe is created, and we repeat the process of redirecting their input/output. The final command in the chain outputs to the standard output, while all intermediate commands pass their output as input to the next.
+
+---
+
+Challenges and Assumptions:
+
+One challenge we encountered was ensuring that pipes were properly closed after use to prevent file descriptor leakage. Additionally, managing the file descriptor redirection in cases of both piping and file handling required careful sequencing to avoid conflicts. We assumed that all commands provided in the flow file were valid and that file names specified in file I/O operations existed unless specified otherwise in the flow file.

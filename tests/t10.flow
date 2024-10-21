@@ -1,0 +1,16 @@
+node=cat_file
+command=cat tests/file1.txt
+
+node=sort_file
+command=sort
+
+node=uniq_file
+command=uniq
+
+pipe=cat_sort
+from=cat_file
+to=sort_file
+
+pipe=sort_uniq
+from=cat_sort
+to=uniq_file

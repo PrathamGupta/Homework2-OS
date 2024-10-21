@@ -1,0 +1,6 @@
+node=head_file
+command=head -n 3 tests/largefile.txt
+
+pipe=head_largefile
+from=head_file
+to=null

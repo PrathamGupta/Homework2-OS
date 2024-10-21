@@ -1,0 +1,9 @@
+node=echo_command
+command=echo "Hello World"
+
+node=grep_world
+command=grep "World"
+
+pipe=echo_grep
+from=echo_command
+to=grep_world

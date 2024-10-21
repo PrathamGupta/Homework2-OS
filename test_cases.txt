@@ -19,7 +19,7 @@ FLOW COMMAND:
 ./flow tests/t2.flow shenanigan
 
 EXPECTED OUTPUT:
-      2       6      12
+      4       5      38
 TEST-END
 
 TEST-3
@@ -59,4 +59,95 @@ file1
 file2
 file3
 TEST-END
+
+TEST-6
+TEST-BEGIN
+COMMAND:
+echo "Hello World" | grep "World"
+
+FLOW COMMAND:
+./flow tests/t6.flow echo_grep
+
+EXPECTED OUTPUT:
+Hello World
+TEST-END
+
+TEST-7
+TEST-BEGIN
+COMMAND:
+ls tests | grep foo
+
+FLOW COMMAND:
+./flow tests/t7.flow ls_grep_foo
+
+EXPECTED OUTPUT:
+foo.txt
+TEST-END
+
+TEST-8
+TEST-BEGIN
+COMMAND:
+head -n 3 tests/largefile.txt
+
+FLOW COMMAND:
+./flow tests/t8.flow head_largefile
+
+EXPECTED OUTPUT:
+Line 1
+Line 2
+Line 3
+TEST-END
+
+TEST-9
+TEST-BEGIN
+COMMAND:
+cat tests/foo.txt | sort
+
+FLOW COMMAND:
+./flow tests/t9.flow cat_sort
+
+EXPECTED OUTPUT:
+apple
+banana
+cherry
+TEST-END
+
+TEST-10
+TEST-BEGIN
+COMMAND:
+cat tests/file1.txt | sort | uniq
+
+FLOW COMMAND:
+./flow tests/t10.flow sort_uniq
+
+EXPECTED OUTPUT:
+apple
+banana
+cherry
+TEST-END
+
+TEST-11
+TEST-BEGIN
+COMMAND:
+echo "apple banana apple" | sort | uniq
+
+FLOW COMMAND:
+./flow tests/t11.flow echo_tr_sort_uniq
+
+EXPECTED OUTPUT:
+apple banana apple
+TEST-END
+
+TEST-12
+TEST-BEGIN
+COMMAND:
+cat tests/foo.txt | wc -c
+
+FLOW COMMAND:
+./flow tests/t12.flow wc_char_count
+
+EXPECTED OUTPUT:
+      19
+TEST-END
+
 

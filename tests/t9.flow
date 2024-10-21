@@ -1,0 +1,9 @@
+node=cat_file
+command=cat tests/foo.txt
+
+node=sort_file
+command=sort
+
+pipe=cat_sort
+from=cat_file
+to=sort_file

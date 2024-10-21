@@ -1,0 +1,9 @@
+node=list_tests
+command=ls tests
+
+node=grep_foo
+command=grep foo
+
+pipe=ls_grep_foo
+from=list_tests
+to=grep_foo
