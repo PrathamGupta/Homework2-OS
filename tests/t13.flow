@@ -1,0 +1,52 @@
+
+node=ls_const_dir
+command=ls tests/const-dir
+
+node=word_count_ls
+command=wc
+
+pipe=ls_to_wc
+from=ls_const_dir
+to=word_count_ls
+
+
+node=echo_hi
+command=echo "hi"
+
+
+node=ls_tests
+command=ls tests/
+
+node=grep_t1
+command=grep "t1"
+
+node=echo_hello
+command=echo "hello"
+
+pipe=ls_to_grep
+from=ls_tests
+to=grep_t1
+
+pipe=ls_to_echo
+from=ls_to_grep
+to=echo_hello
+
+
+node=echo_do
+command=echo "do"
+
+
+concatenate=main_sequence
+parts=4
+part_0=ls_to_wc
+part_1=echo_hi
+part_2=ls_to_echo
+part_3=echo_do
+
+
+node=final_word_count
+command=wc
+
+pipe=final_output_pipe
+from=main_sequence
+to=final_word_count

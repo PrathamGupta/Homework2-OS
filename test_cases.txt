@@ -150,4 +150,15 @@ EXPECTED OUTPUT:
       19
 TEST-END
 
+TEST-13
+TEST-BEGIN
+COMMAND:
+(ls tests/const-dir | wc; echo "hi"; (ls tests/ | grep "t1" | (echo "hello")); echo "do") | wc
+
+FLOW COMMAND:
+./flow tests/t13.flow final_output_pipe
+
+EXPECTED OUTPUT:
+      4       6      36
+TEST-END
 
