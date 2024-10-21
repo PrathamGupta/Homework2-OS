@@ -189,7 +189,12 @@ void parse_flow_file(const std::string& filename) {
             Concatenate concat;
             for (int i = 0; i < parts_count; ++i) {
                 getline(file, line);
-                concat.parts.push_back(line.substr(7));  // "part_X="
+                if(i>9){
+                    concat.parts.push_back(line.substr(8)); //"part_XX="
+                }
+                else{
+                    concat.parts.push_back(line.substr(7));  // "part_X="
+                }
             }
             concatenates[concat_name] = concat;
         }
