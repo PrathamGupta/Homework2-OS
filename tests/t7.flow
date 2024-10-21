@@ -1,9 +1,16 @@
-node=list_tests
-command=ls tests
+node=cat_file
+command=cat tests/file1.txt
 
-node=grep_foo
-command=grep foo
+node=sort_file
+command=sort
 
-pipe=ls_grep_foo
-from=list_tests
-to=grep_foo
+node=uniq_file
+command=uniq
+
+pipe=cat_sort
+from=cat_file
+to=sort_file
+
+pipe=sort_uniq
+from=cat_sort
+to=uniq_file

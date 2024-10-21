@@ -4,7 +4,7 @@ command=cat tests/foo.txt
 node=sed_o_u
 command=sed 's/o/u/g'
 
-pipe=foo_to_fuu
+pipe=foo_to_fuus
 from=cat_foo
 to=sed_o_u
 

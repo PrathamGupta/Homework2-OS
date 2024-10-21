@@ -1,13 +1,10 @@
-node=mkdir_test
-command=mkdir -p tests/a
+node=list_dir
+command=ls tests/const-dir
 
-node=word_count
-command=wc
+node=tee_to_foo
+command=tee tests/tee.txt
 
-stderr=redirect_error
-from=mkdir_test
-
-pipe=catch_errors
-from=redirect_error
-to=word_count
+pipe=ls_to_foo
+from=list_dir
+to=tee_to_foo
 

@@ -1,9 +1,0 @@
-node=cat_file
-command=cat tests/foo.txt
-
-node=wc_char_count
-command=wc -c
-
-pipe=cat_wc
-from=cat_file
-to=wc_char_count

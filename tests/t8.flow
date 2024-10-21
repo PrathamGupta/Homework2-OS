@@ -1,6 +1,16 @@
-node=head_file
-command=head -n 3 tests/largefile.txt
+node=echo_text
+command=echo "apple banana apple"
 
-pipe=head_largefile
-from=head_file
-to=null
+node=sort_file
+command=sort
+
+node=uniq_file
+command=uniq
+
+pipe=tr_sort
+from=echo_text
+to=sort_file
+
+pipe=echo_tr_sort_uniq
+from=tr_sort
+to=uniq_file

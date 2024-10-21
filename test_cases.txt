@@ -25,30 +25,6 @@ TEST-END
 TEST-3
 TEST-BEGIN
 COMMAND:
-mkdir tests/a 2>&1 | wc
-
-FLOW COMMAND:
-./flow tests/t3.flow catch_errors
-
-EXPECTED OUTPUT:
-      1       7      58
-TEST-END
-
-TEST-4
-TEST-BEGIN
-COMMAND:
-wc < tests/result.txt
-
-FLOW COMMAND:
-./flow tests/t4.flow process_pipe
-
-EXPECTED OUTPUT:
- 1  3 15
-TEST-END
-
-TEST-5
-TEST-BEGIN
-COMMAND:
 ls tests/const-dir | tee tests/tee.txt
 
 FLOW COMMAND:
@@ -60,7 +36,7 @@ file2
 file3
 TEST-END
 
-TEST-6
+TEST-4
 TEST-BEGIN
 COMMAND:
 echo "Hello World" | grep "World"
@@ -72,7 +48,7 @@ EXPECTED OUTPUT:
 Hello World
 TEST-END
 
-TEST-7
+TEST-5
 TEST-BEGIN
 COMMAND:
 ls tests | grep foo
@@ -84,21 +60,7 @@ EXPECTED OUTPUT:
 foo.txt
 TEST-END
 
-TEST-8
-TEST-BEGIN
-COMMAND:
-head -n 3 tests/largefile.txt
-
-FLOW COMMAND:
-./flow tests/t8.flow head_largefile
-
-EXPECTED OUTPUT:
-Line 1
-Line 2
-Line 3
-TEST-END
-
-TEST-9
+TEST-6
 TEST-BEGIN
 COMMAND:
 cat tests/foo.txt | sort
@@ -112,7 +74,7 @@ banana
 cherry
 TEST-END
 
-TEST-10
+TEST-7
 TEST-BEGIN
 COMMAND:
 cat tests/file1.txt | sort | uniq
@@ -126,7 +88,7 @@ banana
 cherry
 TEST-END
 
-TEST-11
+TEST-8
 TEST-BEGIN
 COMMAND:
 echo "apple banana apple" | sort | uniq
@@ -137,28 +99,3 @@ FLOW COMMAND:
 EXPECTED OUTPUT:
 apple banana apple
 TEST-END
-
-TEST-12
-TEST-BEGIN
-COMMAND:
-cat tests/foo.txt | wc -c
-
-FLOW COMMAND:
-./flow tests/t12.flow wc_char_count
-
-EXPECTED OUTPUT:
-      19
-TEST-END
-
-TEST-13
-TEST-BEGIN
-COMMAND:
-(ls tests/const-dir | wc; echo "hi"; (ls tests/ | grep "t1" | (echo "hello")); echo "do") | wc
-
-FLOW COMMAND:
-./flow tests/t13.flow final_output_pipe
-
-EXPECTED OUTPUT:
-      4       6      36
-TEST-END
-

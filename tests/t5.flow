@@ -1,10 +1,9 @@
-node=list_dir
-command=ls tests/const-dir
+node=list_tests
+command=ls tests
 
-node=tee_to_foo
-command=tee tests/tee.txt
+node=grep_foo
+command=grep foo
 
-pipe=ls_to_foo
-from=list_dir
-to=tee_to_foo
-
+pipe=ls_grep_foo
+from=list_tests
+to=grep_foo

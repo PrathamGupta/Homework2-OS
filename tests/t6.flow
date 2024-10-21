@@ -1,9 +1,9 @@
-node=echo_command
-command=echo "Hello World"
+node=cat_file
+command=cat tests/foo.txt
 
-node=grep_world
-command=grep "World"
+node=sort_file
+command=sort
 
-pipe=echo_grep
-from=echo_command
-to=grep_world
+pipe=cat_sort
+from=cat_file
+to=sort_file
