@@ -100,6 +100,8 @@ void run_pipe(const std::string& pipe_name) {
             execute_concatenate(p.from);  // Handle concatenation
         }
     } else {
+        // Wait for the child process to finish
+        wait(nullptr);
         // Parent process handles the "to" part
         close(fd[1]);  // Close the write end (parent doesn't need to write)
         dup2(fd[0], STDIN_FILENO);  // Redirect stdin to pipe's read end
@@ -114,8 +116,6 @@ void run_pipe(const std::string& pipe_name) {
             execute_concatenate(p.to);  // Handle concatenation
         }
 
-        // Wait for the child process to finish
-        wait(nullptr);
     }
 }
 
